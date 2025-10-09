@@ -7,4 +7,6 @@ export const AUTH_MESSAGES = {
   WRONG_PASSWORD: "Thông tin đăng nhập không chính xác!",
   NOT_VERIFIED: "Tài khoản của bạn chưa được xác thực!",
   LOGIN_SUCCESS: "Đăng nhập thành công!",
+  VERIFIED_SUCCESS: "Xác thực tài khoản thành công!",
+  NOTFOUND_USER: "Không tìm t hấy tài khoản của bạn!",
 };

@@ -43,6 +43,9 @@ const userSchema = new mongoose.Schema(
         return this.provider === "google";
       },
     },
+    verifyToken: {
+      type: String,
+    },
     role: {
       type: String,
       enum: ["user", "staff", "admin"],
