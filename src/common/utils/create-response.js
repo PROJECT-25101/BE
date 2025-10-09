@@ -28,4 +28,10 @@ export const throwError = (status, message) => {
   throw createError(status, message);
 };
 
+export const throwIfDuplicate = (field, compareField, message) => {
+  if (field && field === compareField) {
+    throwError(400, message);
+  }
+};
+
 export default createResponse;
