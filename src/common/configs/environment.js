@@ -15,6 +15,9 @@ const envVarsSchema = z.object({
   JWT_VERIFY_EXPIRED: z.string().default("1d"),
   MAIL_USER: z.string(),
   MAIL_PASS: z.string(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  GOOGLE_REDIRECT_URI: z.string(),
 });
 
 const result = envVarsSchema.safeParse(process.env);
@@ -42,4 +45,7 @@ export const {
   JWT_VERIFY_EXPIRED,
   MAIL_USER,
   MAIL_PASS,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_REDIRECT_URI,
 } = envVars;

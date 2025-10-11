@@ -1,4 +1,7 @@
+import jwt from "jsonwebtoken";
 import {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_REDIRECT_URI,
   JWT_ACCESS_EXPIRED,
   JWT_ACCESS_SECRET,
   JWT_VERIFY_EXPIRED,
@@ -12,9 +15,13 @@ import { MAIL_MESSAGES } from "../mail/mail.messages.js";
 import { getVerifyTemplateMail } from "../mail/mail.template.js";
 import { sendMail } from "../mail/sendMail.js";
 import User from "../user/user.model.js";
-import jwt from "jsonwebtoken";
 import { AUTH_MESSAGES } from "./auth.messages.js";
-import { comparePassword, generateToken, hashPassword } from "./auth.utils.js";
+import {
+  comparePassword,
+  generateToken,
+  getResponseGoogle,
+  hashPassword,
+} from "./auth.utils.js";
 
 export const registerService = async (payload) => {
   const { userName, email, phone, password } = payload;
@@ -117,5 +124,64 @@ export const verifyUserService = async (token) => {
         message: "Xác thực thất bại",
       }),
     };
+  }
+};
+
+export const loginGooleService = async () => {
+  const scope = ["openid", "email", "profile"].join(" ");
+  const oauth2Url =
+    `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}` +
+    `&redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}` +
+    `&response_type=code` +
+    `&scope=${encodeURIComponent(scope)}` +
+    `&access_type=offline` +
+    `&prompt=consent`;
+  return oauth2Url;
+};
+
+export const callbackLoginGoogleService = async (code) => {
+  try {
+    const {
+      sub: googleId,
+      email,
+      name: userName,
+      picture: avatar,
+    } = await getResponseGoogle(code);
+
+    let user = await User.findOne({ googleId });
+    if (!user) {
+      const existingUserByEmail = await User.findOne({ email });
+      if (existingUserByEmail) {
+        existingUserByEmail.googleId = googleId;
+        existingUserByEmail.provider.push("google");
+        existingUserByEmail.isVerified = true;
+        await existingUserByEmail.save();
+        user = existingUserByEmail;
+      }
+      if (!existingUserByEmail) {
+        user = new User({
+          googleId,
+          email,
+          userName,
+          avatar,
+          provider: ["google"],
+          isVerified: true,
+        });
+        await user.save();
+      }
+    }
+    const payload = {
+      _id: user._id,
+      role: user.role,
+    };
+    const accessToken = generateToken(
+      payload,
+      JWT_ACCESS_SECRET,
+      JWT_ACCESS_EXPIRED,
+    );
+    return { success: true, user: user.toObject(), accessToken };
+  } catch (error) {
+    return { success: false, data: "server" };
   }
 };

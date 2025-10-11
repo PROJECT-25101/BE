@@ -1,8 +1,11 @@
+import querystring from "querystring";
 import { CLIENT_URL } from "../../common/configs/environment.js";
 import handleAsync from "../../common/utils/async-handler.js";
 import createResponse from "../../common/utils/create-response.js";
 import { AUTH_MESSAGES } from "./auth.messages.js";
 import {
+  callbackLoginGoogleService,
+  loginGooleService,
   loginService,
   registerService,
   verifyUserService,
@@ -22,4 +25,27 @@ export const verifyUser = handleAsync(async (req, res, next) => {
   const { token } = req.params;
   const response = await verifyUserService(token);
   return res.redirect(`${CLIENT_URL}/verify?status=${response.data}`);
+});
+
+export const loginGoogle = handleAsync(async (req, res) => {
+  const response = await loginGooleService();
+  return createResponse(res, 200, "OK", response);
+});
+
+export const callbackGoogle = handleAsync(async (req, res) => {
+  const { error, code } = req.query;
+  if (error || !code) {
+    return res.redirect(`${CLIENT_URL}/auth/login?error=${error}`);
+  }
+  const response = await callbackLoginGoogleService(code);
+  if (!response.success) {
+    return res.redirect(`${CLIENT_URL}/auth/login?error=${response.data}`);
+  }
+
+  return res.redirect(
+    `${CLIENT_URL}?${querystring.stringify({
+      tk: response.accessToken,
+      ...response.user,
+    })}`,
+  );
 });
