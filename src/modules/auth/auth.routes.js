@@ -4,6 +4,7 @@ import {
   login,
   loginGoogle,
   register,
+  resetPassword,
   verifyUser,
 } from "./auth.controller.js";
 
@@ -14,5 +15,6 @@ authRoute.post("/login", login);
 authRoute.get("/verify/:token", verifyUser);
 authRoute.post("/google/login", loginGoogle);
 authRoute.get("/google/callback", callbackGoogle);
+authRoute.post("/reset-password", resetPassword);
 
 export default authRoute;

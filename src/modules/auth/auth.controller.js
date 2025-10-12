@@ -8,6 +8,7 @@ import {
   loginGooleService,
   loginService,
   registerService,
+  resetPasswordService,
   verifyUserService,
 } from "./auth.service.js";
 
@@ -48,4 +49,10 @@ export const callbackGoogle = handleAsync(async (req, res) => {
       ...response.user,
     })}`,
   );
+});
+
+export const resetPassword = handleAsync(async (req, res) => {
+  const { email } = req.body;
+  const response = await resetPasswordService(email);
+  return createResponse(res, 200, AUTH_MESSAGES.RESETPASS_SUCCESS, response);
 });

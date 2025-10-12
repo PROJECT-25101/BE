@@ -12,12 +12,16 @@ import {
   throwIfDuplicate,
 } from "../../common/utils/create-response.js";
 import { MAIL_MESSAGES } from "../mail/mail.messages.js";
-import { getVerifyTemplateMail } from "../mail/mail.template.js";
+import {
+  getResetPasswordTemplateMail,
+  getVerifyTemplateMail,
+} from "../mail/mail.template.js";
 import { sendMail } from "../mail/sendMail.js";
 import User from "../user/user.model.js";
 import { AUTH_MESSAGES } from "./auth.messages.js";
 import {
   comparePassword,
+  generateRandomPassword,
   generateToken,
   getResponseGoogle,
   hashPassword,
@@ -184,4 +188,24 @@ export const callbackLoginGoogleService = async (code) => {
   } catch (error) {
     return { success: false, data: "server" };
   }
+};
+
+export const resetPasswordService = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throwError(400, AUTH_MESSAGES.NOTFOUND_USER);
+  }
+  const newPassword = generateRandomPassword(8);
+  const hashNewPassword = await hashPassword(newPassword);
+  user.password = hashNewPassword;
+  await user.save();
+  await sendMail(
+    email,
+    MAIL_MESSAGES.RESETPASSWORD_SEND,
+    getResetPasswordTemplateMail({
+      email,
+      password: newPassword,
+    }),
+  );
+  return user;
 };
