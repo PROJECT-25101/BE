@@ -8,6 +8,8 @@ export const AUTH_MESSAGES = {
   WRONG_PASSWORD: "Thông tin đăng nhập không chính xác!",
   NOT_VERIFIED: "Tài khoản của bạn chưa được xác thực!",
   LOGIN_SUCCESS: "Đăng nhập thành công!",
+  SEND_VERIFY_SUCCESS:
+    "Vui lòng kiểm tra email chúng tôi đã gửi mã xác thực tới tài khoản của bạn",
   VERIFIED_SUCCESS: "Xác thực tài khoản thành công!",
   RESETPASS_SUCCESS:
     "Vui lòng kiểm tra email chúng tôi đã gửi mật khẩu mới tới email của bạn!",

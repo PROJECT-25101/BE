@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import {
+  API_URL,
   GOOGLE_CLIENT_ID,
   GOOGLE_REDIRECT_URI,
   JWT_ACCESS_EXPIRED,
@@ -64,7 +65,7 @@ export const registerService = async (payload) => {
     MAIL_MESSAGES.VERIFY_SEND,
     getVerifyTemplateMail({
       email,
-      link: `http://localhost:8000/api/auth/verify/${verifyToken}`,
+      link: `${API_URL}/auth/verify/${verifyToken}`,
     }),
   );
   return user;
@@ -208,4 +209,27 @@ export const resetPasswordService = async (email) => {
     }),
   );
   return user;
+};
+
+export const sendVerifyService = async (email) => {
+  const findUser = await User.findOne({ email });
+  if (!findUser) {
+    throwError(400, AUTH_MESSAGES.NOTFOUND_USER);
+  }
+  const payload = {
+    _id: findUser._id,
+    role: findUser.role,
+  };
+  const token = generateToken(payload, JWT_VERIFY_SECRET, JWT_VERIFY_EXPIRED);
+  findUser.verifyToken = token;
+  await findUser.save();
+  await sendMail(
+    email,
+    MAIL_MESSAGES.VERIFY_SEND,
+    getVerifyTemplateMail({
+      email,
+      link: `${API_URL}/auth/verify/${token}`,
+    }),
+  );
+  return findUser;
 };
