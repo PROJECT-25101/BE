@@ -45,10 +45,11 @@ export const callbackGoogle = handleAsync(async (req, res) => {
   }
 
   return res.redirect(
-    `${CLIENT_URL}/login?${querystring.stringify({
-      tk: response.accessToken,
-      ...response.user,
-    })}`,
+    `${CLIENT_URL}/login-google/${response.accessToken}?${querystring.stringify(
+      {
+        ...response.user,
+      },
+    )}`,
   );
 });
 
