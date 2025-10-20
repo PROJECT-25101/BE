@@ -29,7 +29,10 @@ export const throwError = (status, message) => {
 };
 
 export const throwIfDuplicate = (field, compareField, message) => {
-  if (field && field === compareField) {
+  if (
+    field &&
+    field.toString().toLowerCase() === compareField.toString().toLowerCase()
+  ) {
     throwError(400, message);
   }
 };
