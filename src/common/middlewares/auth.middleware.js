@@ -17,13 +17,13 @@ export const authenticate = (secret) => {
       next();
     } catch (error) {
       if (error.name === "TokenExpiredError") {
-        error.status = 401;
+        error.statusCode = 401;
         error.message = "Token đã hết hạn";
       } else if (error.name === "JsonWebTokenError") {
-        error.status = 401;
+        error.statusCode = 401;
         error.message = "Token xác thực không hợp lệ";
-      } else if (!error.status) {
-        error.status = 500;
+      } else if (!error.statusCode) {
+        error.statusCode = 500;
         error.message = error.message || "Lỗi không xác định";
       }
       next(error);
