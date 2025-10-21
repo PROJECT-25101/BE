@@ -3,6 +3,8 @@ import {
   throwIfDuplicate,
 } from "../../common/utils/create-response.js";
 import { queryBuilder } from "../../common/utils/query-builder.js";
+import Seat from "../seat/seat.model.js";
+import { generateSeat } from "../seat/seat.utils.js";
 import { CAR_MESSAGES } from "./car.messages.js";
 import Car from "./car.model.js";
 
@@ -20,12 +22,15 @@ export const getDetailCarService = async (id) => {
 };
 
 export const createCarService = async (payload) => {
-  const existingCar = await Car.findOne({
-    $or: [
-      { name: new RegExp(`^${payload.name}$`, "i") },
-      { licensePlate: new RegExp(`^${payload.licensePlate}$`, "i") },
-    ],
-  });
+  const existingCar = await Car.findOne(
+    {
+      $or: [
+        { name: new RegExp(`^${payload.name}$`, "i") },
+        { licensePlate: new RegExp(`^${payload.licensePlate}$`, "i") },
+      ],
+    },
+    null,
+  );
   if (existingCar) {
     const { name, licensePlate } = existingCar;
     throwIfDuplicate(name, payload.name, CAR_MESSAGES.EXISTING_CAR_NAME);
@@ -36,6 +41,12 @@ export const createCarService = async (payload) => {
     );
   }
   const car = await Car.create(payload);
+  const seats = await generateSeat({
+    carId: car._id,
+    seatQuantity: payload?.maxSeatCapacity,
+    column: payload?.column,
+  });
+  await Seat.insertMany(seats);
   return car;
 };
 
