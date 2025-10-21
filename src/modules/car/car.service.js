@@ -3,6 +3,7 @@ import {
   throwIfDuplicate,
 } from "../../common/utils/create-response.js";
 import { queryBuilder } from "../../common/utils/query-builder.js";
+import { regexLower } from "../../common/utils/regex.js";
 import Seat from "../seat/seat.model.js";
 import { generateSeat } from "../seat/seat.utils.js";
 import { CAR_MESSAGES } from "./car.messages.js";
@@ -25,8 +26,8 @@ export const createCarService = async (payload) => {
   const existingCar = await Car.findOne(
     {
       $or: [
-        { name: new RegExp(`^${payload.name}$`, "i") },
-        { licensePlate: new RegExp(`^${payload.licensePlate}$`, "i") },
+        { name: regexLower(payload.name) },
+        { licensePlate: regexLower(payload.licensePlate) },
       ],
     },
     null,
@@ -54,8 +55,8 @@ export const updateCarService = async (id, payload) => {
   const existingCar = await Car.findOne({
     _id: { $ne: id },
     $or: [
-      { name: new RegExp(`^${payload.name}$`, "i") },
-      { licensePlate: new RegExp(`^${payload.licensePlate}$`, "i") },
+      { name: regexLower(payload.name) },
+      { licensePlate: regexLower(payload.licensePlate) },
     ],
   });
   if (existingCar) {
