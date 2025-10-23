@@ -38,6 +38,10 @@ const carSchema = new mongoose.Schema(
       type: Number,
       default: 16,
     },
+    totalFloor: {
+      type: Number,
+      default: 1,
+    },
     type: {
       type: String,
       enum: ["VIP", "NORMAL"],

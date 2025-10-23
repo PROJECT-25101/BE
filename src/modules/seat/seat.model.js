@@ -19,6 +19,10 @@ const seatSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    col: {
+      type: Number,
+      default: 1,
+    },
     status: {
       type: Boolean,
       default: true,

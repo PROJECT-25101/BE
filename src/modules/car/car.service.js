@@ -42,12 +42,11 @@ export const createCarService = async (payload) => {
     );
   }
   const car = await Car.create(payload);
-  const seats = await generateSeat({
-    carId: car._id,
-    seatQuantity: payload?.maxSeatCapacity,
-    column: payload?.column,
-  });
-  await Seat.insertMany(seats);
+  const { allSeats, totalSeats } = await generateSeat(car._id, payload.floors);
+  await Seat.insertMany(allSeats);
+  car.maxSeatCapacity = totalSeats;
+  car.totalFloor = payload.floors.length;
+  await car.save();
   return car;
 };
 
