@@ -23,6 +23,10 @@ const seatSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    row: {
+      type: Number,
+      default: 1,
+    },
     status: {
       type: Boolean,
       default: true,

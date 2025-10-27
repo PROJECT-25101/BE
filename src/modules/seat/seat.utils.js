@@ -1,7 +1,8 @@
 import { throwError } from "../../common/utils/create-response.js";
 import { SEAT_MESSAGES } from "./seat.messages.js";
+import Seat from "./seat.model.js";
 
-export const generateSeat = async (carId, floors = []) => {
+export const generateSeat = async (carId, floors = [], initFloor) => {
   if (!carId) throwError(400, SEAT_MESSAGES.ID_REQUIRED);
   if (!Array.isArray(floors) || floors.length === 0)
     throwError(400, SEAT_MESSAGES.QUANTITY_INVALID);
@@ -23,10 +24,37 @@ export const generateSeat = async (carId, floors = []) => {
         carId,
         seatOrder,
         seatLabel,
+        row: row + 1,
         col,
-        floor: floorNumber,
+        floor: initFloor ? initFloor : floorNumber,
       });
     }
   }
   return { allSeats, totalSeats: allSeats.length };
+};
+
+export const ensureUniqueSeatLabel = async (carId, floor, seatLabel) => {
+  let currentLabel = seatLabel;
+
+  while (
+    await Seat.findOne({
+      carId,
+      floor,
+      seatLabel: currentLabel,
+    })
+  ) {
+    const match = currentLabel.match(/^([A-Za-z]+)(\d+)$/);
+    if (match) {
+      const prefix = match[1];
+      const number = parseInt(match[2], 10) + 1;
+      currentLabel = `${prefix}${number}`;
+    } else {
+      const suffixMatch = currentLabel.match(/(\d+)$/);
+      currentLabel = suffixMatch
+        ? currentLabel.replace(/\d+$/, (n) => parseInt(n, 10) + 1)
+        : `${currentLabel}1`;
+    }
+  }
+
+  return currentLabel;
 };
