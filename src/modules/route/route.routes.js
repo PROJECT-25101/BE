@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createRoute,
+  getAllProvince,
   getAllRoute,
   getDetailRoute,
   updateRoute,
@@ -12,6 +13,7 @@ import { JWT_ACCESS_SECRET } from "../../common/configs/environment.js";
 
 const routeRoadRoute = Router();
 
+routeRoadRoute.get("/provinces", getAllProvince);
 routeRoadRoute.get("/", getAllRoute);
 routeRoadRoute.get("/detail/:id", getDetailRoute);
 routeRoadRoute.use(authenticate(JWT_ACCESS_SECRET), validRole("admin"));

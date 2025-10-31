@@ -35,7 +35,6 @@ export const queryBuilder = async (Model, queryParams, options = {}) => {
       [field]: searchRegex,
     }));
   }
-
   let query = Model.find(queryConditions);
 
   if (populate && populate.length > 0) {
@@ -106,11 +105,6 @@ function applyFilter(key, value, queryConditions) {
 
   if (mongoose.Types.ObjectId.isValid(value)) {
     queryConditions[key] = value;
-    return;
-  }
-
-  if (!isNaN(Number(value))) {
-    queryConditions[key] = Number(value);
     return;
   }
 
