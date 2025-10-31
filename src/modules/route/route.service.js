@@ -18,7 +18,7 @@ export const getDetailRouteService = async (id) => {
 };
 
 export const createRouteService = async (payload) => {
-  const { name, pickupPoint, dropPoint } = payload;
+  const { name, pickupPoint, dropPoint, viaCities } = payload;
   if (regexLower(pickupPoint.label) === regexLower(dropPoint.label)) {
     throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DROP);
   }
@@ -27,18 +27,20 @@ export const createRouteService = async (payload) => {
       { name: regexLower(name) },
       {
         $and: [
-          { "pickupPoint.label": regexLower(pickupPoint.label) },
-          { "dropPoint.label": regexLower(dropPoint.label) },
+          {
+            viaCities: {
+              $size: viaCities.length,
+              $all: viaCities.map((city) => ({
+                $elemMatch: { label: regexLower(city.label) },
+              })),
+            },
+          },
         ],
       },
     ],
   });
   if (existRoute) {
     throwIfDuplicate(existRoute.name, name, ROUTE_MESSAGES.EXISTING_NAME);
-    throwError(
-      400,
-      ROUTE_MESSAGES.EXISTING_ROUTE(pickupPoint.label, dropPoint.label),
-    );
   }
   const route = await Route.create(payload);
   return route;
