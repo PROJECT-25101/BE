@@ -23,18 +23,11 @@ export const getDetailCarService = async (id) => {
 };
 
 export const createCarService = async (payload) => {
-  const existingCar = await Car.findOne(
-    {
-      $or: [
-        { name: regexLower(payload.name) },
-        { licensePlate: regexLower(payload.licensePlate) },
-      ],
-    },
-    null,
-  );
+  const existingCar = await Car.findOne({
+    licensePlate: regexLower(payload.licensePlate),
+  });
   if (existingCar) {
-    const { name, licensePlate } = existingCar;
-    throwIfDuplicate(name, payload.name, CAR_MESSAGES.EXISTING_CAR_NAME);
+    const { licensePlate } = existingCar;
     throwIfDuplicate(
       licensePlate,
       payload.licensePlate,
@@ -52,15 +45,10 @@ export const createCarService = async (payload) => {
 
 export const updateCarService = async (id, payload) => {
   const existingCar = await Car.findOne({
-    _id: { $ne: id },
-    $or: [
-      { name: regexLower(payload.name) },
-      { licensePlate: regexLower(payload.licensePlate) },
-    ],
+    licensePlate: regexLower(payload.licensePlate),
   });
   if (existingCar) {
-    const { name, licensePlate } = existingCar;
-    throwIfDuplicate(name, payload.name, CAR_MESSAGES.EXISTING_CAR_NAME);
+    const { licensePlate } = existingCar;
     throwIfDuplicate(
       licensePlate,
       payload.licensePlate,
