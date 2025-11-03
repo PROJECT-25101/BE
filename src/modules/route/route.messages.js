@@ -3,6 +3,8 @@ export const ROUTE_MESSAGES = {
   EXISTING_ROUTE: (pickupPoint, dropPoint) => {
     return `Tuyến đường từ ${pickupPoint} đến ${dropPoint} đã tồn tại trong hệ thống!`;
   },
+  EXISTING_ROUTE_VIACITIES:
+    "Tuyến đường bạn nhập đã có sẵn. Vui lòng kiểm tra lại thông tin.",
   CREATED_ROUTE: "Tạo tuyến đường thành công!",
   UPDATED_ROUTE: "Cập nhật tuyến đường thành công!",
   NOT_FOUND_ROUTE: "Không tìm thấy tuyến đường!",

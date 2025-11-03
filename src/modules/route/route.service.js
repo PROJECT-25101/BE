@@ -18,56 +18,46 @@ export const getDetailRouteService = async (id) => {
 };
 
 export const createRouteService = async (payload) => {
-  const { name, pickupPoint, dropPoint, viaCities } = payload;
+  const { pickupPoint, dropPoint, viaCities } = payload;
   if (regexLower(pickupPoint.label) === regexLower(dropPoint.label)) {
     throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DROP);
   }
   const existRoute = await Route.findOne({
-    $or: [
-      { name: regexLower(name) },
-      {
-        $and: [
-          {
-            viaCities: {
-              $size: viaCities.length,
-              $all: viaCities.map((city) => ({
-                $elemMatch: { label: regexLower(city.label) },
-              })),
-            },
-          },
-        ],
-      },
-    ],
+    "pickupPoint.label": regexLower(pickupPoint.label),
+    "dropPoint.label": regexLower(dropPoint.label),
+    $and: viaCities.map((city) => ({
+      viaCities: { $elemMatch: { label: regexLower(city.label) } },
+    })),
   });
   if (existRoute) {
-    throwIfDuplicate(existRoute.name, name, ROUTE_MESSAGES.EXISTING_NAME);
+    throwError(400, ROUTE_MESSAGES.EXISTING_ROUTE_VIACITIES);
   }
   const route = await Route.create(payload);
   return route;
 };
 
 export const updateRouteService = async (id, payload) => {
-  const { name, pickupPoint, dropPoint } = payload;
+  const { name, pickupPoint, dropPoint, viaCities } = payload;
   if (regexLower(pickupPoint) === regexLower(dropPoint)) {
     throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DROP);
   }
   const existRoute = await Route.findOne({
     _id: { $ne: id },
     $or: [
-      { name: regexLower(name) },
       {
-        $and: [
-          { "pickupPoint.label": regexLower(pickupPoint.label) },
-          { "dropPoint.label": regexLower(dropPoint.label) },
-        ],
+        "pickupPoint.label": regexLower(pickupPoint.label),
+        "dropPoint.label": regexLower(dropPoint.label),
+        $and: viaCities.map((city) => ({
+          viaCities: { $elemMatch: { label: regexLower(city.label) } },
+        })),
       },
     ],
   });
   if (existRoute) {
-    throwIfDuplicate(existRoute.name, name, ROUTE_MESSAGES.EXISTING_NAME);
-    throwError(
-      400,
-      ROUTE_MESSAGES.EXISTING_ROUTE(pickupPoint.label, dropPoint.label),
+    throwIfDuplicate(
+      existRoute.name,
+      name,
+      ROUTE_MESSAGES.EXISTING_ROUTE_VIACITIES,
     );
   }
   const updated = await Route.findByIdAndUpdate(id, payload, { new: true });
