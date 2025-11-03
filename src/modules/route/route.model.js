@@ -19,11 +19,7 @@ const pointSchema = new mongoose.Schema(
 
 const routeSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-    },
     description: String,
-    viaCities: [pointSchema],
     pickupPoint: pointSchema,
     dropPoint: pointSchema,
     routePrice: {

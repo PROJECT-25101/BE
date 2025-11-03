@@ -6,6 +6,7 @@ import { queryBuilder } from "../../common/utils/query-builder.js";
 import { regexLower } from "../../common/utils/regex.js";
 import { ROUTE_MESSAGES } from "./route.messages.js";
 import Route from "./route.model.js";
+import { checkDuplicateRoute } from "./route.utils.js";
 
 export const getAllRouteService = async (query) => {
   const routes = await queryBuilder(Route, query);
@@ -18,57 +19,35 @@ export const getDetailRouteService = async (id) => {
 };
 
 export const createRouteService = async (payload) => {
-  const { name, pickupPoint, dropPoint, viaCities } = payload;
+  const { pickupPoint, dropPoint, description } = payload;
   if (regexLower(pickupPoint.label) === regexLower(dropPoint.label)) {
     throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DROP);
   }
-  const existRoute = await Route.findOne({
-    $or: [
-      { name: regexLower(name) },
-      {
-        $and: [
-          {
-            viaCities: {
-              $size: viaCities.length,
-              $all: viaCities.map((city) => ({
-                $elemMatch: { label: regexLower(city.label) },
-              })),
-            },
-          },
-        ],
-      },
-    ],
-  });
+  const existRoute = await checkDuplicateRoute(
+    pickupPoint,
+    dropPoint,
+    description,
+  );
   if (existRoute) {
-    throwIfDuplicate(existRoute.name, name, ROUTE_MESSAGES.EXISTING_NAME);
+    throwError(400, ROUTE_MESSAGES.EXISTING_ROUTE_VIACITIES);
   }
   const route = await Route.create(payload);
   return route;
 };
 
 export const updateRouteService = async (id, payload) => {
-  const { name, pickupPoint, dropPoint } = payload;
-  if (regexLower(pickupPoint) === regexLower(dropPoint)) {
+  const { description, pickupPoint, dropPoint } = payload;
+  if (regexLower(pickupPoint.label) === regexLower(dropPoint.label)) {
     throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DROP);
   }
-  const existRoute = await Route.findOne({
-    _id: { $ne: id },
-    $or: [
-      { name: regexLower(name) },
-      {
-        $and: [
-          { "pickupPoint.label": regexLower(pickupPoint.label) },
-          { "dropPoint.label": regexLower(dropPoint.label) },
-        ],
-      },
-    ],
-  });
+  const existRoute = await checkDuplicateRoute(
+    pickupPoint,
+    dropPoint,
+    description,
+    id,
+  );
   if (existRoute) {
-    throwIfDuplicate(existRoute.name, name, ROUTE_MESSAGES.EXISTING_NAME);
-    throwError(
-      400,
-      ROUTE_MESSAGES.EXISTING_ROUTE(pickupPoint.label, dropPoint.label),
-    );
+    throwError(400, ROUTE_MESSAGES.EXISTING_ROUTE_VIACITIES);
   }
   const updated = await Route.findByIdAndUpdate(id, payload, { new: true });
   return updated;
