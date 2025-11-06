@@ -8,6 +8,21 @@ import { ROUTE_MESSAGES } from "./route.messages.js";
 import Route from "./route.model.js";
 import { checkDuplicateRoute } from "./route.utils.js";
 
+export const getPointService = async (pickupPointId) => {
+  const conditional = pickupPointId ? { "pickupPoint._id": pickupPointId } : {};
+  const pointPick = pickupPointId ? "dropPoint" : "pickupPoint";
+  const routes = await Route.find(conditional).lean();
+  const pointUnique = new Map();
+  routes.forEach((item) => {
+    if (!pointUnique.has(item[pointPick]._id)) {
+      pointUnique.set(item[pointPick]._id.toString(), {
+        ...item[pointPick],
+      });
+    }
+  });
+  return [...pointUnique.values()];
+};
+
 export const getAllRouteService = async (query) => {
   const routes = await queryBuilder(Route, query);
   return routes;

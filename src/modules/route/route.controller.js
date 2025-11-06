@@ -7,6 +7,7 @@ import {
   createRouteService,
   getAllRouteService,
   getDetailRouteService,
+  getPointService,
   updateRouteService,
   updateStatusRouteService,
 } from "./route.service.js";
@@ -20,6 +21,12 @@ export const getAllProvince = handleAsync(async (req, res) => {
     _id: item.code,
   }));
   return createResponse(res, 200, ROOT_MESSAGES.OK, newResponse);
+});
+
+export const getPoint = handleAsync(async (req, res) => {
+  const { pickupPointId } = req.query;
+  const data = await getPointService(pickupPointId);
+  return createResponse(res, 200, ROOT_MESSAGES.OK, data);
 });
 
 export const getAllRoute = handleAsync(async (req, res) => {
