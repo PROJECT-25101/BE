@@ -5,6 +5,7 @@ import {
   getAllRoute,
   getDetailRoute,
   getPoint,
+  getWardByProvince,
   updateRoute,
   updateStatusRoute,
 } from "./route.controller.js";
@@ -15,6 +16,7 @@ import { JWT_ACCESS_SECRET } from "../../common/configs/environment.js";
 const routeRoadRoute = Router();
 
 routeRoadRoute.get("/provinces", getAllProvince);
+routeRoadRoute.get("/wards/:id", getWardByProvince);
 routeRoadRoute.get("/point-trip", getPoint);
 routeRoadRoute.get("/", getAllRoute);
 routeRoadRoute.get("/detail/:id", getDetailRoute);

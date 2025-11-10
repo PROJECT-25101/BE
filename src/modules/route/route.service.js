@@ -6,7 +6,7 @@ import { queryBuilder } from "../../common/utils/query-builder.js";
 import { regexLower } from "../../common/utils/regex.js";
 import { ROUTE_MESSAGES } from "./route.messages.js";
 import Route from "./route.model.js";
-import { checkDuplicateRoute } from "./route.utils.js";
+import { checkDistrictDuplicate, checkDuplicateRoute } from "./route.utils.js";
 
 export const getPointService = async (pickupPointId) => {
   const conditional = pickupPointId ? { "pickupPoint._id": pickupPointId } : {};
@@ -38,6 +38,14 @@ export const createRouteService = async (payload) => {
   if (regexLower(pickupPoint.label) === regexLower(dropPoint.label)) {
     throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DROP);
   }
+  if (checkDistrictDuplicate(pickupPoint.district)) {
+    throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DESCRIPTION);
+  }
+
+  if (checkDistrictDuplicate(dropPoint.district)) {
+    throwError(400, ROUTE_MESSAGES.DUPLICATE_DROP_DESCRIPTION);
+  }
+
   const existRoute = await checkDuplicateRoute(
     pickupPoint,
     dropPoint,
@@ -54,6 +62,13 @@ export const updateRouteService = async (id, payload) => {
   const { description, pickupPoint, dropPoint } = payload;
   if (regexLower(pickupPoint.label) === regexLower(dropPoint.label)) {
     throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DROP);
+  }
+  if (checkDistrictDuplicate(pickupPoint.district)) {
+    throwError(400, ROUTE_MESSAGES.DUPLICATE_PICK_DESCRIPTION);
+  }
+
+  if (checkDistrictDuplicate(dropPoint.district)) {
+    throwError(400, ROUTE_MESSAGES.DUPLICATE_DROP_DESCRIPTION);
   }
   const existRoute = await checkDuplicateRoute(
     pickupPoint,

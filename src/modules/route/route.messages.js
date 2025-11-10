@@ -13,4 +13,6 @@ export const ROUTE_MESSAGES = {
   DEACTIVATED:
     "Tuyến đường đã bị khoá các lịch chạy tuyến đường này sẽ bị khoá!",
   DUPLICATE_PICK_DROP: "Điểm xuất phát và điểm kết thúc phải khác nhau!",
+  DUPLICATE_PICK_DESCRIPTION: "Các điểm đón không được trùng nhau!",
+  DUPLICATE_DROP_DESCRIPTION: "Các điểm trả không được trùng nhau!",
 };
