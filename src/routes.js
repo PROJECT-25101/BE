@@ -6,7 +6,7 @@ import { JWT_ACCESS_SECRET } from "./common/configs/environment.js";
 import carRoute from "./modules/car/car.routes.js";
 import seatRoute from "./modules/seat/seat.routes.js";
 import routeRoadRoute from "./modules/route/route.routes.js";
-import tripRoute from "./modules/trip/trip.routes.js";
+import scheduleRoute from "./modules/schedule/schedule.routes.js";
 
 const routes = Router();
 
@@ -15,6 +15,6 @@ routes.use("/user", authenticate(JWT_ACCESS_SECRET), userRoute);
 routes.use("/car", carRoute);
 routes.use("/seat", seatRoute);
 routes.use("/route", routeRoadRoute);
-routes.use("/trip", tripRoute);
+routes.use("/schedule", scheduleRoute);
 
 export default routes;
