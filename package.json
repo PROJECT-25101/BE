@@ -28,6 +28,7 @@
     "bcryptjs": "^3.0.2",
     "concurrently": "^9.1.2",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.19",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "expressjs": "^1.0.1",
