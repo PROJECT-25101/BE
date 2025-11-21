@@ -8,8 +8,8 @@ export const ROUTE_MESSAGES = {
   CREATED_ROUTE: "Tạo tuyến đường thành công!",
   UPDATED_ROUTE: "Cập nhật tuyến đường thành công!",
   NOT_FOUND_ROUTE: "Không tìm thấy tuyến đường!",
-  ACTIVATED:
-    "Tuyến đường đã được hoạt động trở lại các lịch chạy sẽ hoạt động lại!",
+  ACTIVATED: (unlockScheduleSuccess, unlockScheduleFailed) =>
+    `Tuyến đường đã được kích hoạt, mở khoá lại thành công ${unlockScheduleSuccess} thất bại ${unlockScheduleFailed} lịch chạy!`,
   DEACTIVATED:
     "Tuyến đường đã bị khoá các lịch chạy tuyến đường này sẽ bị khoá!",
   DUPLICATE_PICK_DROP: "Điểm xuất phát và điểm kết thúc phải khác nhau!",

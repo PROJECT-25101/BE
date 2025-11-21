@@ -72,7 +72,12 @@ export const updateStatusRoute = handleAsync(async (req, res) => {
   return createResponse(
     res,
     200,
-    response.status ? ROUTE_MESSAGES.ACTIVATED : ROUTE_MESSAGES.DEACTIVATED,
+    response.status
+      ? ROUTE_MESSAGES.ACTIVATED(
+          response.unlockScheduleSuccess,
+          response.unlockScheduleFailed,
+        )
+      : ROUTE_MESSAGES.DEACTIVATED,
     response,
   );
 });
