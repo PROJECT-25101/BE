@@ -41,7 +41,12 @@ export const updateStatusCar = handleAsync(async (req, res) => {
   return createResponse(
     res,
     200,
-    response.status ? CAR_MESSAGES.ACTIVATED : CAR_MESSAGES.DEACTIVATED,
+    response.status
+      ? CAR_MESSAGES.ACTIVATED(
+          response.unlockScheduleSuccess,
+          response.unlockScheduleFailed,
+        )
+      : CAR_MESSAGES.DEACTIVATED,
     response,
   );
 });
