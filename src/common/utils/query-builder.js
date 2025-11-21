@@ -41,7 +41,7 @@ export const queryBuilder = async (Model, queryParams, options = {}) => {
     populate.forEach((pop) => {
       query = query.populate({
         path: pop.path,
-        select: pop.select || "name",
+        select: pop.select || null,
         populate: pop.populate || undefined,
       });
     });

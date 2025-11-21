@@ -12,11 +12,10 @@ export const SCHEDULE_MESSAGES = {
   DEACTIVATED: "Lịch chạy này đã bị khóa!",
   CAR_NOT_AVAILABLE: "Chiếc xe phụ trách lịch chạy này đang không hoạt động!",
   ROUTE_NOT_AVAILABLE:
-    "tuyến đường tutowng ứng với lịch chạy này đang không khả dụng!",
-  CREATE_MANY_SCHEDULE: (successLength, failedLength) => {
-    var message = `Đã tiến hành tạo ${successLength + failedLength} lịch chạy. `;
-    message += successLength > 0 ? `Success : ${successLength}, ` : ``;
-    message += failedLength > 0 ? `Failed : ${failedLength}` : ``;
-    return message;
-  },
+    "tuyến đường tương ứng với lịch chạy này đang không khả dụng!",
+  DISABLE_BY_HANDLE: "Lịch chạy đã bị khoá trước đó",
+  CREATE_MANY_SCHEDULE: (createdLength) =>
+    `Tạo thành công ${createdLength} lịch chạy!`,
+  CREATE_MANY_ERROR_SCHEDULE: (totalLength, failedLength) =>
+    `Tạo lịch chạy thất bại do có ${failedLength} lịch chạy tạo thất bại trong tổng số ${totalLength} lịch chạy`,
 };

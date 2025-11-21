@@ -7,6 +7,7 @@ import {
   createScheduleService,
   getAllScheduleService,
   getDetailScheduleService,
+  insertContinueManyScheduleService,
   updateScheduleService,
   updateStatusScheduleService,
 } from "./schedule.service.js";
@@ -32,14 +33,28 @@ export const createSchedule = handleAsync(async (req, res) => {
 export const createManySchedule = handleAsync(async (req, res) => {
   const payload = req.body;
   const response = await createManyScheduleService(payload);
+  const createdLength = response.createdSchedules.length;
+  const failedLength = response.failedSchedules.length;
+  const totalLength = createdLength + failedLength;
+  const isError = failedLength > 0;
+  return createResponse(
+    res,
+    isError > 0 ? 400 : 201,
+    isError
+      ? SCHEDULE_MESSAGES.CREATE_MANY_ERROR_SCHEDULE(totalLength, failedLength)
+      : SCHEDULE_MESSAGES.CREATE_MANY_SCHEDULE(failedLength),
+    response,
+  );
+});
+
+export const insertManyContinueSchedule = handleAsync(async (req, res) => {
+  const payload = req.body;
+  const createdSchedules = await insertContinueManyScheduleService(payload);
   return createResponse(
     res,
     201,
-    SCHEDULE_MESSAGES.CREATE_MANY_SCHEDULE(
-      response.createdSchedules.length,
-      response.failedSchedules.length,
-    ),
-    response,
+    `Đã tạo thành công ${createdSchedules.length} lịch chạy.`,
+    createdSchedules,
   );
 });
 
@@ -56,7 +71,7 @@ export const updateStatusSchedule = handleAsync(async (req, res) => {
   return createResponse(
     res,
     200,
-    response.status
+    !response.isDisable
       ? SCHEDULE_MESSAGES.ACTIVATED
       : SCHEDULE_MESSAGES.DEACTIVATED,
     response,

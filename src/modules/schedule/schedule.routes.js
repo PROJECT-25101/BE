@@ -4,6 +4,7 @@ import {
   createSchedule,
   getAllSchedule,
   getDetailSchedule,
+  insertManyContinueSchedule,
   updateSchedule,
   updateStatusSchedule,
 } from "./schedule.controller.js";
@@ -14,7 +15,8 @@ scheduleRoute.get("/", getAllSchedule);
 scheduleRoute.get("/detail/:id", getDetailSchedule);
 scheduleRoute.post("/", createSchedule);
 scheduleRoute.post("/many", createManySchedule);
+scheduleRoute.post("/many-continue", insertManyContinueSchedule);
 scheduleRoute.patch("/update/:id", updateSchedule);
-scheduleRoute.patch("/status/:id", updateStatusSchedule);
+scheduleRoute.patch("/update-disable/:id", updateStatusSchedule);
 
 export default scheduleRoute;
