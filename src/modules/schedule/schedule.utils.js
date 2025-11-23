@@ -110,8 +110,18 @@ export const groupedSchedules = (schedules, query) => {
       "confirmed",
       "running",
       "completed",
+      "pendingCancel",
       "cancelled",
     ];
+    const mergedPending = ["pending", "confirmed", "running"];
+    const statusCount = Object.fromEntries(
+      allStatus.map((st) => {
+        if (st === "pending") {
+          return ["pending", mergedPending.includes(schedule.status) ? 1 : 0];
+        }
+        return [st, schedule.status === st ? 1 : 0];
+      }),
+    );
 
     if (existing) {
       existing.count++;
@@ -131,9 +141,7 @@ export const groupedSchedules = (schedules, query) => {
       groupSchedules.set(key, {
         ...schedule.toObject(),
         count: 1,
-        statusCount: Object.fromEntries(
-          allStatus.map((st) => [st, schedule.status === st ? 1 : 0]),
-        ),
+        statusCount: statusCount,
         activeCount: schedule.isDisable === false ? 1 : 0,
         inActiveCount: schedule.isDisable === true ? 1 : 0,
         dayOfWeek: [dayOfWeek],
