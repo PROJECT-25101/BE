@@ -4,6 +4,7 @@ import createResponse from "../../common/utils/create-response.js";
 import {
   getSeatScheduleService,
   toggleSeatService,
+  unHoldSeatService,
 } from "./seat-schedule.service.js";
 
 export const getSeatSchedule = handleAsync(async (req, res) => {
@@ -17,4 +18,10 @@ export const toggleSeat = handleAsync(async (req, res) => {
   const { body } = req;
   const data = await toggleSeatService(body, _id);
   return createResponse(res, 201, ROOT_MESSAGES.OK, data);
+});
+
+export const unHoldSeat = handleAsync(async (req, res) => {
+  const { _id } = req.user;
+  const data = await unHoldSeatService(_id);
+  return createResponse(res, 200, "OK", data);
 });
