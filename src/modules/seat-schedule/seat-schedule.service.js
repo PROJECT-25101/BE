@@ -1,11 +1,13 @@
 import { throwError } from "../../common/utils/create-response.js";
 import { getIO } from "../../socket/socket.instance.js";
+import Schedule from "../schedule/schedule.model.js";
 import Seat from "../seat/seat.model.js";
 import SeatSchedule from "./seat-schedule.model.js";
 
 export const getSeatScheduleService = async (carId, scheduleId) => {
   const seats = await Seat.find({ carId }).lean();
   const seatSchedules = await SeatSchedule.find({ scheduleId }).lean();
+  const scheduleData = await Schedule.findById(scheduleId);
   const result = seats.map((seat) => {
     const schedule = seatSchedules.find(
       (s) => s.seatId.toString() === seat._id.toString(),
@@ -17,6 +19,7 @@ export const getSeatScheduleService = async (carId, scheduleId) => {
     return {
       ...seat,
       userId,
+      price: scheduleData.price,
       bookingStatus,
     };
   });
@@ -44,7 +47,6 @@ export const getSeatScheduleService = async (carId, scheduleId) => {
 
 export const toggleSeatService = async (payload, userId) => {
   const existing = await SeatSchedule.findOne({ seatId: payload.seatId });
-
   if (existing) {
     if (existing.userId.toString() !== userId.toString()) {
       const isHold = existing.status === "hold";
@@ -67,6 +69,11 @@ export const toggleSeatService = async (payload, userId) => {
       throwError(400, "Bạn đã đặt ghế này rồi!");
     }
   }
+  const count = await SeatSchedule.countDocuments({
+    userId,
+  });
+  if (count === 4)
+    throwError(400, "Bạn chỉ được phép giữ 4 ghé. Để đảm bảo hệ thống!");
   const seat = await SeatSchedule.create({ userId, ...payload });
   const io = getIO();
   io.to(payload.scheduleId.toString()).emit("seatUpdated", {
