@@ -1,15 +1,16 @@
 import cors from "cors";
 import express from "express";
+import http from "http";
 import morgan from "morgan";
+import connectDB from "./src/common/configs/database.js";
 import { NODE_ENV, PORT } from "./src/common/configs/environment.js";
+import { checkVersion } from "./src/common/configs/node-version.js";
 import errorHandler from "./src/common/middlewares/error.middleware.js";
 import jsonValidator from "./src/common/middlewares/json-valid.middleware.js";
-import notFoundHandler from "./src/common/middlewares/not-found.middleware.js";
-import routes from "./src/routes.js";
-import { checkVersion } from "./src/common/configs/node-version.js";
-import connectDB from "./src/common/configs/database.js";
 import { normalizeQueryParams } from "./src/common/middlewares/normalQuery.middleware.js";
-import http from "http";
+import notFoundHandler from "./src/common/middlewares/not-found.middleware.js";
+import { startJob } from "./src/modules/job/index.js";
+import routes from "./src/routes.js";
 import { initSocket } from "./src/socket/index.js";
 
 checkVersion();
@@ -36,6 +37,7 @@ connectDB()
     console.log("✓ Connected to MongoDB");
     server = http.createServer(app);
     initSocket(server);
+    startJob();
     server.listen(PORT, () => {
       console.log("API Server Started");
       if (NODE_ENV === "development") {
