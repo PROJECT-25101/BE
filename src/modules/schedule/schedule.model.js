@@ -66,6 +66,10 @@ const scheduleSchema = new mongoose.Schema(
       default: "service",
     },
     cancelDescription: String,
+    bookedCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     versionKey: false,
