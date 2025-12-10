@@ -108,3 +108,25 @@ export const unHoldSeatService = async (userId) => {
 
   return result.deletedCount;
 };
+
+export const extendHoldSeatTime = async (
+  userId,
+  scheduleId,
+  seatIds,
+  extraMinutes = 5,
+) => {
+  const filter = {
+    userId,
+    status: "hold",
+  };
+  if (scheduleId) filter.scheduleId = scheduleId;
+  if (seatIds) filter.seatId = { $in: seatIds };
+
+  const newExpireTime = dayjs().add(extraMinutes, "minutes").toDate();
+
+  const result = await SeatSchedule.updateMany(filter, {
+    $set: { expiredHold: newExpireTime },
+  });
+
+  return result.modifiedCount;
+};
