@@ -13,7 +13,7 @@ const orderRouter = Router();
 orderRouter.get("/", getAllOrder);
 orderRouter.get("/:userId", getAllOrderByUser);
 orderRouter.get("/detail/:id", getDetailOrder);
-orderRouter.post("/", createOrder);
+orderRouter.post("/create-payos", createOrder);
 orderRouter.patch("/update/:id", updateOrder);
 orderRouter.patch("/status/:id", updateStatusOrder);
 

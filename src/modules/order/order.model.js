@@ -54,60 +54,12 @@ const carInfoSchema = new mongoose.Schema(
   { versionKey: false, timestamps: false, _id: false },
 );
 
-const districtSchema = new mongoose.Schema(
-  {
-    _id: { type: String, required: true },
-    label: { type: String, required: true },
-    description: [{ type: String, required: true }],
-  },
-  { _id: false },
-);
-
-const pointSchema = new mongoose.Schema(
-  {
-    _id: { type: String, required: true },
-    label: { type: String, required: true },
-    description: { type: String },
-    district: [districtSchema],
-  },
-  { versionKey: false, timestamps: false, _id: false },
-);
-
-const routeInfoSchema = new mongoose.Schema(
-  {
-    pickupPoint: pointSchema,
-    dropPoint: pointSchema,
-    distance: {
-      type: String,
-      required: true,
-    },
-    duration: {
-      type: Number,
-      required: true,
-    },
-  },
-  { versionKey: false, timestamps: false, _id: false },
-);
-
 const orderSchema = new mongoose.Schema(
   {
     paymentOrderCode: {
       type: String,
-      // unique: true,
-    },
-    paymentTransactionId: {
-      type: String,
     },
     paymentCheckoutUrl: { type: String },
-    paymentHistory: {
-      type: Array,
-      default: [],
-    },
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "paid", "failed"],
-      default: "pending",
-    },
     carId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Car",
@@ -131,27 +83,40 @@ const orderSchema = new mongoose.Schema(
     seats: [seatsSchema],
     customerInfo: customerInfoSchema,
     carInfo: carInfoSchema,
-    routeInfo: routeInfoSchema,
+    pickupPoint: {
+      type: String,
+      required: true,
+    },
+    startTime: {
+      type: Date,
+      required: true,
+    },
+    dropPoint: {
+      type: String,
+      required: true,
+    },
+    arrivalTime: {
+      type: Date,
+      required: true,
+    },
     totalPrice: {
       type: Number,
       required: true,
     },
-    paymentMethod: {
-      type: String,
-      enum: ["online", "cash"],
-      required: true,
+    isPaid: {
+      type: Boolean,
+      default: false,
     },
     status: {
       type: String,
-      enum: [
-        "pending",
-        "paid",
-        "confirmed",
-        "canceled",
-        "completed",
-        "expired",
-      ],
-      default: "pending",
+      enum: ["BUYED", "USED", "CANCELLED"],
+      default: "BUYED",
+    },
+    cancelDescription: {
+      type: String,
+      required: function () {
+        return this.status === "CANCELLED";
+      },
     },
     note: {
       type: String,

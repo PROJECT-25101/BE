@@ -3,6 +3,12 @@ import { queryBuilder } from "../../common/utils/query-builder.js";
 import { createPaymentService } from "../payment/payment.service.js";
 import { ORDER_MESSAGES } from "./order.message.js";
 import Order from "./order.model.js";
+import {
+  checkAvailableCar,
+  checkAvailableRoute,
+  checkAvailableSchedule,
+  checkAvailableSeat,
+} from "./order.util.js";
 
 const populatedOrder = [
   {
@@ -76,6 +82,11 @@ export const getDetailOrderService = async (id) => {
 };
 
 export const createOrderService = async (payload) => {
+  const seatIds = payload.seats.map((item) => item.seatId);
+  await checkAvailableCar(payload.carId);
+  await checkAvailableRoute(payload.routeId);
+  await checkAvailableSchedule(payload.scheduleId);
+  await checkAvailableSeat(seatIds);
   const createdOrder = await Order.create(payload);
   const paymentData = await createPaymentService(createdOrder._id);
   return {

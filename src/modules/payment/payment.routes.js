@@ -1,9 +1,8 @@
 import { Router } from "express";
-import { createPayment, handlePayOSWebHook } from "./payment.controller.js";
+import { handlePayOSWebHook } from "./payment.controller.js";
 
 const paymentRouter = Router();
 
-paymentRouter.post("/create", createPayment);
-paymentRouter.post("/webhook", handlePayOSWebHook);
+paymentRouter.get("/webhook", handlePayOSWebHook);
 
 export default paymentRouter;

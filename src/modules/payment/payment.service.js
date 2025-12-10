@@ -1,7 +1,7 @@
-import Order from "../order/order.model.js";
+import { PayOS } from "@payos/node";
 import { throwError } from "../../common/utils/create-response.js";
 import { ORDER_MESSAGES } from "../order/order.message.js";
-import { PayOS } from "@payos/node";
+import Order from "../order/order.model.js";
 
 const payos = new PayOS({
   clientId: process.env.PAYOS_CLIENT_ID,
@@ -22,11 +22,10 @@ export const createPaymentService = async (orderId) => {
     orderCode: paymentOrderCode,
     amount: order.totalPrice,
     description: `Thanh toán đơn hàng`,
-    returnUrl: "http://localhost:5173/",
+    returnUrl: "http://localhost:8000/api/payment/webhook",
     //return url là sai sẽ phải sửa//////////
-    cancelUrl: "http://localhost:5173/",
+    cancelUrl: "http://localhost:8000/api/payment/webhook",
   };
-  console.log(payload);
   const response = await payos.paymentRequests.create(payload);
   // const response = await payos.payment.createPaymentLink(payload);
 
@@ -43,30 +42,12 @@ export const createPaymentService = async (orderId) => {
 export const handlePayOSWebHookService = async (orderCode, status) => {
   const order = await Order.findOne({ paymentOrderCode: orderCode });
   if (!order) throwError(400, ORDER_MESSAGES.ORDER_NOT_FOUND);
-  switch (status) {
-    case "PAID":
-      order.paymentStatus = "paid";
-      order.status = "paid";
-      break;
-
-    case "FAILED":
-      order.paymentStatus = "failed";
-      break;
-
-    case "CANCELLED":
-      order.paymentStatus = "failed";
-      order.status = "canceled";
-      break;
+  if (status === "PAID") {
+    order.isPaid = true;
+    await order.save();
   }
-  if (order.paymentHistory) {
-    order.paymentHistory.push({
-      at: new Date(),
-      status,
-      orderCode: orderCode,
-    });
+  if (status === "CANCELLED") {
+    await order.deleteOne();
   }
-
-  await order.save();
-
   return order;
 };
