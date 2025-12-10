@@ -24,6 +24,7 @@
   "author": "hoangnm.ndm",
   "license": "MIT",
   "dependencies": {
+    "@payos/node": "^2.0.3",
     "axios": "^1.13.1",
     "bcryptjs": "^3.0.2",
     "concurrently": "^9.1.2",
