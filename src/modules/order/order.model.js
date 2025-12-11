@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const seatsSchema = new mongoose.Schema(
   {
+    seatId: {
+      type: String,
+      required: true,
+    },
     seatOrder: {
       type: Number,
       required: true,
