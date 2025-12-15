@@ -34,26 +34,12 @@ export const getAllOrderService = async (query) => {
   return orders;
 };
 
-export const getAllOrderByUserService = async (userId) => {
-  const response = await Order.find({ userId: userId })
-    .populate({
-      path: "carId",
-      select: "-createdAt -updatedAt",
-    })
-    .populate({
-      path: "routeId",
-      select: "-createdAt -updatedAt",
-    })
-    .populate({
-      path: "userId",
-      select: "userName email crew",
-    })
-    .populate({
-      path: "scheduleId",
-      select: "startTime arrivalTime phone",
-    })
-    .lean();
-  return response;
+export const getAllOrderByUserService = async (userId, query) => {
+  const { data, meta } = await queryBuilder(Order, {
+    userId: userId,
+    ...query,
+  });
+  return { data, meta };
 };
 
 export const getDetailOrderService = async (id) => {
