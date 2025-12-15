@@ -47,7 +47,10 @@ export const getSeatScheduleService = async (carId, scheduleId) => {
 };
 
 export const toggleSeatService = async (payload, userId) => {
-  const existing = await SeatSchedule.findOne({ seatId: payload.seatId });
+  const existing = await SeatSchedule.findOne({
+    seatId: payload.seatId,
+    scheduleId: payload.scheduleId,
+  });
   if (existing) {
     if (existing.userId.toString() !== userId.toString()) {
       const isHold = existing.status === "hold";
@@ -72,6 +75,8 @@ export const toggleSeatService = async (payload, userId) => {
   }
   const count = await SeatSchedule.countDocuments({
     userId,
+    scheduleId: payload.scheduleId,
+    status: "hold",
   });
   if (count === 4)
     throwError(400, "Bạn chỉ được phép giữ 4 ghé. Để đảm bảo hệ thống!");
